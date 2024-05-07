@@ -3873,6 +3873,86 @@ _SOKOL_PRIVATE void _sapp_macos_frame(void) {
     _sapp.macos.window.acceptsMouseMovedEvents = YES;
     _sapp.macos.window.restorable = YES;
 
+	/* Window events in MacOS */
+	NSMenu *menu_bar = [[NSMenu alloc] init];
+	[NSApp setMainMenu:menu_bar];
+
+	NSMenuItem *app_menu_item = [[NSMenuItem alloc] init];
+	[menu_bar addItem:app_menu_item];
+
+	NSMenu *app_menu = [[NSMenu alloc] init];
+
+	const char *prog_name = *(_NSGetProgname());
+	NSString *app_name = (prog_name != NULL) ?
+		[NSString stringWithUTF8String:prog_name] : @"Application";
+
+	[app_menu addItemWithTitle:[NSString stringWithFormat:@"About %@", app_name]
+		action:@selector(orderFrontStandardAboutPanel:)
+		keyEquivalent:@""];
+	[app_menu addItem:[NSMenuItem separatorItem]];
+
+	NSMenu *services_menu = [[NSMenu alloc] init];
+	[NSApp setServicesMenu:services_menu];
+	NSMenuItem *services_menu_item = [app_menu addItemWithTitle:@"Services"
+		action:NULL
+		keyEquivalent:@""];
+	[app_menu addItem:[NSMenuItem separatorItem]];
+
+	[app_menu addItemWithTitle:[NSString stringWithFormat:@"Hide %@", app_name]
+		action:@selector(hide:)
+		keyEquivalent:@"h"];
+
+	[[app_menu addItemWithTitle:@"Hide Others"
+		action:@selector(hideOtherApplications:)
+		keyEquivalent:@"h"]
+		setKeyEquivalentModifierMask:NSEventModifierFlagOption | 
+		NSEventModifierFlagCommand];
+
+	[app_menu addItemWithTitle:@"Show All"
+		action:@selector(unhideAllApplications:)
+		keyEquivalent:@""];
+
+	[app_menu addItem:[NSMenuItem separatorItem]];
+
+	[app_menu addItemWithTitle:[NSString stringWithFormat:@"Quit %@", app_name]
+		action:@selector(terminate:)
+		keyEquivalent:@"q"];
+	[app_menu addItem:[NSMenuItem separatorItem]];
+
+	NSMenuItem *window_menu_item = [[NSMenuItem alloc] init];
+	[menu_bar addItem:window_menu_item];
+	NSMenu *window_menu = [[NSMenu alloc] initWithTitle:@"Window"];
+	[NSApp setWindowsMenu:window_menu];
+
+	[window_menu addItemWithTitle:@"Minimize"
+		action:@selector(performMiniaturize:)
+		keyEquivalent:@"m"];
+
+	[window_menu addItemWithTitle:@"Zoom"
+		action:@selector(performZoom:)
+		keyEquivalent:@""];
+	[window_menu addItem:[NSMenuItem separatorItem]];
+
+	[window_menu addItemWithTitle:@"Bring All to Front"
+		action:@selector(arrangeInFront:)
+		keyEquivalent:@""];
+
+	[[window_menu addItemWithTitle:@"Enter Full Screen"
+		action:@selector(toggleFullScreen:)
+		keyEquivalent:@"f"]
+		setKeyEquivalentModifierMask:NSEventModifierFlagControl | 
+		NSEventModifierFlagCommand];
+
+	[app_menu_item setSubmenu:app_menu];
+	[services_menu_item setSubmenu:services_menu];
+	[window_menu_item setSubmenu:window_menu];
+
+	/* We can free the entire app_menu_item */
+	_SAPP_OBJC_RELEASE(app_name);
+	_SAPP_OBJC_RELEASE(app_menu_item);
+	_SAPP_OBJC_RELEASE(app_menu);
+	_SAPP_OBJC_RELEASE(menu_bar);
+
     _sapp.macos.win_dlg = [[_sapp_macos_window_delegate alloc] init];
     _sapp.macos.window.delegate = _sapp.macos.win_dlg;
     #if defined(SOKOL_METAL)
