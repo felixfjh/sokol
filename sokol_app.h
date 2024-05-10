@@ -2046,6 +2046,9 @@ inline void sapp_run(const sapp_desc& desc) { return sapp_run(&desc); }
     #if defined(SOKOL_METAL)
         #import <Metal/Metal.h>
         #import <MetalKit/MetalKit.h>
+
+		/*for calling _NSGetProgname()*/
+		#include <crt_externs.h>
     #endif
     #if defined(_SAPP_MACOS)
         #if defined(_SAPP_ANY_GL)
@@ -2054,6 +2057,9 @@ inline void sapp_run(const sapp_desc& desc) { return sapp_run(&desc); }
             #endif
             #include <Cocoa/Cocoa.h>
             #include <OpenGL/gl3.h>
+
+			/*for calling _NSGetProgname()*/
+			#include <crt_externs.h>
         #endif
     #elif defined(_SAPP_IOS)
         #import <UIKit/UIKit.h>
